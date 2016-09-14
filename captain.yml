@@ -1,0 +1,3 @@
+demo:
+  build: Dockerfile
+  image: gentics/mesh-silex-demo

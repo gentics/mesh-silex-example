@@ -1,0 +1,8 @@
+{
+  "type": "application",
+  "require": {
+    "silex/silex": "~1.3.5",
+    "twig/twig": "~1.24.2",
+    "nategood/httpful": "0.2.20"
+ }
+}
