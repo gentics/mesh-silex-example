@@ -29,7 +29,7 @@ function loadChildren($uuid) {
 
 $app->get('/{path}', function (Request $request, $path) use ($app) {
   if ($path == "/" || $path=="") {
-    return $app['twig']->render('welcome.twig', array('children' => getNavigationData()));
+    return $app['twig']->render('welcome.twig', array('breadcrumb' => loadBreadcrumbData()));
   } else {
     $uri = BASEURI . "demo/webroot/" . rawurlencode($path) . "?resolveLinks=short";
     $response = \Httpful\Request::get($uri)->send();

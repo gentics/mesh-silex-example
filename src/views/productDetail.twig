@@ -8,7 +8,7 @@
     <div class="row">
 
         <div class="col-md-6">
-            <form name="productForm"">
+            <form name="productForm">
 
                 <div class="form-group">
                     <label for="name">Product Name</label>
@@ -18,10 +18,10 @@
                            name="name"
                            placeholder="Name"
                            required
-                           ng-model="vm.product.fields.name">
+                           value="{{ product.fields.name}}">
                 </div>
 
-                <div class="form-group" ng-class="{ 'has-error' : productForm.description.$invalid }">
+                <div class="form-group">
                     <label for="description">Description</label>
                     <textarea class="form-control"
                               rows="7"
@@ -31,7 +31,7 @@
                               >{{ product.fields.description }}</textarea>
                 </div>
 
-                <div class="form-group" ng-class="{ 'has-error' : productForm.sku.$invalid }">
+                <div class="form-group">
                     <label for="sku">SKU</label>
                     <input type="text"
                            class="form-control"
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm-4 form-group" ng-class="{ 'has-error' : productForm.price.$invalid }">
+                    <div class="col-sm-4 form-group">
                         <label for="price">Price</label>
                         <input type="number"
                                step="0.01"
@@ -52,7 +52,7 @@
                                name="price"
                                value="{{ product.fields.price }}">
                     </div>
-                    <div class="col-sm-4 form-group" ng-class="{ 'has-error' : productForm.weight.$invalid }">
+                    <div class="col-sm-4 form-group">
                         <label for="weight">Weight</label>
                         <input type="number"
                                class="form-control"
@@ -61,7 +61,7 @@
                                name="weight"
                                value="{{ product.fields.weight }}">
                     </div>
-                    <div class="col-sm-4 form-group" ng-class="{ 'has-error' : productForm.stock.$invalid }">
+                    <div class="col-sm-4 form-group">
                         <label for="stock">Stock Level</label>
                         <input type="number"
                                min="0"
