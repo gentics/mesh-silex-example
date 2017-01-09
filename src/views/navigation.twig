@@ -1,0 +1,19 @@
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+
+            <div class="navbar-header">
+                <a href="#/" class="navbar-brand">Home</a>
+            </div>
+
+            <ul class="nav navbar-nav">
+                {% for segment in breadcrumb %}
+                {% if segment.node.schema.name == "category" %}
+                <li>
+                    <a href="{{segment.node.path}}">{{segment.node.fields.name}}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+
+        </div>
+    </nav>
