@@ -41,6 +41,8 @@ $app->get('/{path}', function (Request $request, string $path) use ($app) {
   if ($path === "/" || $path === "") {
     return $app['twig']->render('welcome.twig', array('breadcrumb' => loadBreadcrumbData()));
   } else {
+    // Use the webroot endpoint to resolve the path to a Gentics Mesh node. The node information will later 
+    // be used to determine which twig template to use in order to render the page.
     $uri = BASEURI . "demo/webroot/" . rawurlencode($path) . "?resolveLinks=short";
     $response = \Httpful\Request::get($uri)->send();
 
