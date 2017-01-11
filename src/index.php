@@ -11,7 +11,7 @@ $app['debug'] = true;
 define("BASEURI", "http://admin:admin@mesh:8080/api/v1/");
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/views',
+  'twig.path' => __DIR__.'/views',
 ));
 
 /**
@@ -19,9 +19,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
  * @return Array with breadcrumb information
  */
 function loadBreadcrumbData(): array {
-    $uri = BASEURI . "demo/navroot/?maxDepth=1&resolveLinks=short";
-    $response = \Httpful\Request::get($uri)->send();
-    return $response->body->root->children;
+  $uri = BASEURI . "demo/navroot/?maxDepth=1&resolveLinks=short";
+  $response = \Httpful\Request::get($uri)->send();
+  return $response->body->root->children;
 }
 
 /**
@@ -29,9 +29,9 @@ function loadBreadcrumbData(): array {
  * @param uuid Uuid of the node
  */
 function loadChildren(string $uuid): array {
-    $uri = BASEURI . "demo/nodes/". $uuid . "/children?expandAll=true&resolveLinks=short";
-    $response =  \Httpful\Request::get($uri)->send();
-    return $response->body->data;
+  $uri = BASEURI . "demo/nodes/". $uuid . "/children?expandAll=true&resolveLinks=short";
+  $response =  \Httpful\Request::get($uri)->send();
+  return $response->body->data;
 }
 
 // Main route handler
