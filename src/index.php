@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 $app['debug'] = true;
 
-define("BASEURI", "http://admin:admin@mesh:8080/api/v1/");
+define("BASEURI", "http://webclient:webclient@mesh:8080/api/v1/");
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
   'twig.path' => __DIR__.'/views',
