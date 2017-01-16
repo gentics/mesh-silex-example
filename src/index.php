@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 $app['debug'] = true;
 
-define("BASEURI", "http://webclient:webclient@mesh:8080/api/v1/");
+define("BASEURI", "http://webclient:webclient@localhost:8080/api/v1/");
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
   'twig.path' => __DIR__.'/views',
@@ -48,7 +48,11 @@ $app->get('/{path}', function (Request $request, string $path) use ($app) {
 
     // Check whether the found node represents an image. Otherwise continue with template specific code.
     if (substr($response->content_type, 0, 6) === "image/") {
-      return $response->raw_body;
+       $serverResponse = new Response();
+       $serverResponse->setContent($response->raw_body);
+       $serverResponse->setStatusCode(Response::HTTP_OK);
+       $serverResponse->headers->set('Content-Type', $response->content_type);
+       return $serverResponse;
     } else {
       $uuid = $response->body->uuid;
       $children = loadChildren($uuid);

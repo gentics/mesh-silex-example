@@ -17,10 +17,8 @@ composer update
 # Downlad Gentics Mesh from http://getmesh.io/Download and start it
 java -jar mesh-demo-0.6.xx.jar
 
-# Start the docker container to run the example 
-./dev.sh
-
-# Access http://localhost:3000 in your browser
-
 # Alternatively you can also deploy the PHP example on your Apache Webserver installation.
 ```
+
+
+### Apache 
