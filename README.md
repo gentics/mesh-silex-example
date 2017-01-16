@@ -16,9 +16,20 @@ composer update
 
 # Downlad Gentics Mesh from http://getmesh.io/Download and start it
 java -jar mesh-demo-0.6.xx.jar
-
-# Alternatively you can also deploy the PHP example on your Apache Webserver installation.
 ```
 
+### Run with PHP 7
 
-### Apache 
+The example can also be run directly using the embedded PHP server.
+
+```
+php -S localhost:3000 src/index.php
+```
+
+### Run with Docker
+
+You can start the docker container to run the example using the ```./dev.sh``` script. Once started you should be able to access the demo example via http://localhost:3000 in your browser.
+
+### Run with Apache
+
+Alternatively you can also deploy the PHP example on your Apache Webserver installation. You may use the provided site configration file ```mesh-demo.conf``` for your apache.
