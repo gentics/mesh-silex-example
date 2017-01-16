@@ -2,7 +2,7 @@
 
 This example shows how to use [Gentics Mesh](http://getmesh.io) in combination with the [Silex](http://expressjs.com/) PHP routing framework.
 
-The Gentics Mesh Webroot API is being used to located the requested content. The JSON information of that content is used to render various [Twig](http://twig.sensiolabs.org/) templates.
+The Gentics Mesh Webroot API is being used to locate the requested content. The JSON information of that content is used to render various [Twig](http://twig.sensiolabs.org/) templates.
 
 ## Getting Started
 
