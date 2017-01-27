@@ -14,7 +14,7 @@ cd mesh-silex-example
 # Install needed dependencies 
 composer update
 
-# Downlad Gentics Mesh from http://getmesh.io/Download and start it
+# Download Gentics Mesh from http://getmesh.io/Download and start it
 java -jar mesh-demo-0.6.xx.jar
 ```
 
