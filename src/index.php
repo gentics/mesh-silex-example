@@ -57,7 +57,7 @@ $app->get('/{path}', function (Request $request, string $path) use ($app) {
       $uuid = $response->body->uuid;
       $children = loadChildren($uuid);
 
-      // Check whether the loaded node is an vehicle node. In those cases a detail page should be shown.
+      // Check whether the loaded node is a vehicle node. In those cases a detail page should be shown.
       if ($response->body->schema->name === "vehicle") {
         return $app['twig']->render('productDetail.twig', array(
           'breadcrumb' => loadBreadcrumbData(),
