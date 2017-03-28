@@ -3,7 +3,7 @@
 {% block content %}
 <div>
     <h1>{{ category.fields.name }}</h1>
-    <p>{{ category.fields.description }}</p>
+    <p>{{ category.fields.description | default("") }}</p>
     <div class="row products">
         {% for product in products %}
         <div class="col-xs-12 col-sm-6 col-md-4">

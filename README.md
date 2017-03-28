@@ -15,7 +15,7 @@ cd mesh-silex-example
 composer update
 
 # Download Gentics Mesh from http://getmesh.io/Download and start it
-java -jar mesh-demo-0.6.xx.jar
+java -jar mesh-demo-0.9.xx.jar
 ```
 
 ### Run with PHP 7

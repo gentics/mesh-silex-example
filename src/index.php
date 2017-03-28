@@ -8,11 +8,30 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 $app['debug'] = true;
 
-define("BASEURI", "http://webclient:webclient@localhost:8080/api/v1/");
+define("BASEURI", "http://localhost:8080/api/v1/");
+
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
   'twig.path' => __DIR__.'/views',
 ));
+
+function get($uri) {
+  $cookieFile = ".session";
+  return \Httpful\Request::get($uri)
+  ->addOnCurlOption(CURLOPT_COOKIEJAR, $cookieFile)
+  ->addOnCurlOption(CURLOPT_COOKIEFILE, $cookieFile);
+}
+
+/**
+ * Login
+ */
+function login() {
+  $uri = BASEURI . "auth/login";
+  $response = get($uri)
+   ->authenticateWith("webclient", "webclient")
+   ->send();
+   return $response;
+}
 
 /**
  * Load the breadcrumb information for the root level of the project.
@@ -20,8 +39,8 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
  */
 function loadBreadcrumbData(): array {
   $uri = BASEURI . "demo/navroot/?maxDepth=1&resolveLinks=short";
-  $response = \Httpful\Request::get($uri)->send();
-  return $response->body->root->children;
+  $response = get($uri)->send();
+  return $response->body->children;
 }
 
 /**
@@ -30,9 +49,11 @@ function loadBreadcrumbData(): array {
  */
 function loadChildren(string $uuid): array {
   $uri = BASEURI . "demo/nodes/". $uuid . "/children?expandAll=true&resolveLinks=short";
-  $response =  \Httpful\Request::get($uri)->send();
+  $response = get($uri)->send();
   return $response->body->data;
 }
+
+login();
 
 // Main route handler
 $app->get('/{path}', function (Request $request, string $path) use ($app) {
@@ -44,7 +65,7 @@ $app->get('/{path}', function (Request $request, string $path) use ($app) {
     // Use the webroot endpoint to resolve the path to a Gentics Mesh node. The node information will later 
     // be used to determine which twig template to use in order to render the page.
     $uri = BASEURI . "demo/webroot/" . rawurlencode($path) . "?resolveLinks=short";
-    $response = \Httpful\Request::get($uri)->send();
+    $response = get($uri)->send();
 
     // Check whether the found node represents an image. Otherwise continue with template specific code.
     if (substr($response->content_type, 0, 6) === "image/") {
@@ -56,7 +77,6 @@ $app->get('/{path}', function (Request $request, string $path) use ($app) {
     } else {
       $uuid = $response->body->uuid;
       $children = loadChildren($uuid);
-
       // Check whether the loaded node is an vehicle node. In those cases a detail page should be shown.
       if ($response->body->schema->name === "vehicle") {
         return $app['twig']->render('productDetail.twig', array(
