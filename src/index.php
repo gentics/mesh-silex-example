@@ -16,21 +16,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 ));
 
 function get($uri) {
-  $cookieFile = ".session";
-  return \Httpful\Request::get($uri)
-  ->addOnCurlOption(CURLOPT_COOKIEJAR, $cookieFile)
-  ->addOnCurlOption(CURLOPT_COOKIEFILE, $cookieFile);
-}
-
-/**
- * Login
- */
-function login() {
-  $uri = BASEURI . "auth/login";
-  $response = get($uri)
-   ->authenticateWith("webclient", "webclient")
-   ->send();
-   return $response;
+  return \Httpful\Request::get($uri);
 }
 
 /**
@@ -52,8 +38,6 @@ function loadChildren(string $uuid): array {
   $response = get($uri)->send();
   return $response->body->data;
 }
-
-login();
 
 // Main route handler
 $app->get('/{path}', function (Request $request, string $path) use ($app) {
