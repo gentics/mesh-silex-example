@@ -6,10 +6,10 @@
             </div>
 
             <ul class="nav navbar-nav">
-                {% for segment in breadcrumb %}
-                {% if segment.node.schema.name == "category" %}
+                {% for element in data.project.rootNode.children.elements %}
+                {% if element.schema.name == "category" %}
                 <li>
-                    <a href="{{segment.node.path}}">{{segment.node.fields.name}}</a>
+                    <a href="{{element.path}}">{{element.fields.name}}</a>
                 </li>
                 {% endif %}
                 {% endfor %}

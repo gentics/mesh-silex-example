@@ -10,74 +10,175 @@ $app['debug'] = true;
 
 define("BASEURI", "http://localhost:8080/api/v1/");
 
+function endsWith($haystack, $needle) {
+	$length = strlen($needle);
+	if ($length == 0) {
+		return true;
+	}
+
+	return (substr($haystack, -$length) === $needle);
+}
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
-  'twig.path' => __DIR__.'/views',
+	'twig.path' => __DIR__.'/views',
 ));
 
 function get($uri) {
-  return \Httpful\Request::get($uri);
+	return \Httpful\Request::get($uri);
 }
 
-/**
- * Load the breadcrumb information for the root level of the project.
- * @return Array with breadcrumb information
- */
-function loadBreadcrumbData(): array {
-  $uri = BASEURI . "demo/navroot/?maxDepth=1&resolveLinks=short";
-  $response = get($uri)->send();
-  return $response->body->children;
+function postQuery($uri, $query) {
+	$json = array();
+	$json["query"] = $query;
+	return \Httpful\Request::post($uri)->body(json_encode($json));
 }
 
-/**
- * Load a list of children for the specified node.
- * @param uuid Uuid of the node
- */
-function loadChildren(string $uuid): array {
-  $uri = BASEURI . "demo/nodes/". $uuid . "/children?expandAll=true&resolveLinks=short";
-  $response = get($uri)->send();
-  return $response->body->data;
+function runQuery($query) {
+	$uri = BASEURI . "demo/graphql";
+	$response = postQuery($uri, $query)->send();
+	return $response->body;
 }
+
+function loadTopNav() {
+	$query = 
+	'{
+		project {
+			rootNode {
+				children {
+					elements {
+						schema {
+							name
+						}
+						path
+						fields {
+							... on category {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+	}';
+	return runQuery($query)->data;
+}
+
+function loadViaGraphQL(string $path) {
+	$uri = BASEURI . "demo/graphql";
+	$query = 
+	'{
+		# We need to load the children of the root node of the project. 
+		# Those nodes will be used to construct our top navigation.
+		project {
+			rootNode {
+				children {
+					elements {
+						# Include the schema so that we can filter our the images node. 
+						# This node should not be part of the top nav
+						schema {
+							name
+						}
+						path
+						fields {
+							... on category {
+								name
+							}
+						}
+					}
+				}
+			}
+		}
+		# Load the node with the specified path. This can either be a vehicle or a category.
+		node(path: "/' . $path . '") {
+			uuid
+			# Include the schema so that we can switch between our two schemas. 
+			# E.g.: productDetail for vehicles and productList for categories nodes
+			schema { 
+				name 
+			}
+			fields {
+				... on category {
+					slug
+					description
+					name
+				}
+				... on vehicleImage {
+					name
+				}
+				...productInfo
+			}
+			# Include the child nodes for categories. 
+			# This information is used to list the vehicles in the productList view
+			products: children {
+				elements {
+					path
+					uuid
+					fields {
+						...productInfo
+					}
+				}
+			}
+		}
+	}
+  # We need to load the fields in two places. 
+	# Thus it makes sense to use a fragment and only specify them once.
+	fragment productInfo on vehicle {
+		slug
+		name
+		SKU
+		description
+		price
+		weight
+		stocklevel
+		image: vehicleImage {
+			path
+		}
+	}';
+	return runQuery($query)->data;
+}
+
+function notFound() {
+	$serverResponse = new Response();
+	$serverResponse->setStatusCode(Response::HTTP_NOT_FOUND);
+	return $serverResponse;
+}
+
 
 // Main route handler
 $app->get('/{path}', function (Request $request, string $path) use ($app) {
 
-  // Handle index/welcome page
-  if ($path === "/" || $path === "") {
-    return $app['twig']->render('welcome.twig', array('breadcrumb' => loadBreadcrumbData()));
-  } else {
-    // Use the webroot endpoint to resolve the path to a Gentics Mesh node. The node information will later 
-    // be used to determine which twig template to use in order to render the page.
-    $uri = BASEURI . "demo/webroot/" . rawurlencode($path) . "?resolveLinks=short";
-    $response = get($uri)->send();
-
-    // Check whether the found node represents an image. Otherwise continue with template specific code.
-    if (substr($response->content_type, 0, 6) === "image/") {
-       $serverResponse = new Response();
-       $serverResponse->setContent($response->raw_body);
-       $serverResponse->setStatusCode(Response::HTTP_OK);
-       $serverResponse->headers->set('Content-Type', $response->content_type);
-       return $serverResponse;
-    } else {
-      $uuid = $response->body->uuid;
-      $children = loadChildren($uuid);
-
-      // Check whether the loaded node is a vehicle node. In those cases a detail page should be shown.
-      if ($response->body->schema->name === "vehicle") {
-        return $app['twig']->render('productDetail.twig', array(
-          'breadcrumb' => loadBreadcrumbData(),
-          'product' => $response->body)
-        );
-      } else {
-        // In all other cases the node can only be a category. Display the product list for those cases.
-        return $app['twig']->render('productList.twig', array(
-          'breadcrumb' => loadBreadcrumbData(),
-          'category'=> $response->body,
-          'products' => $children)
-        );
-      }
-    }
-  }
+	// Handle index/welcome page
+	if ($path === "/" || $path === "") {
+		return $app['twig']->render('welcome.twig', array('data' => loadTopNav()));
+	} 
+	if ($path === "favicon.ico") {
+		return notFound();
+	}
+	# Lets handle images by examining the path. We directly load those images using
+	# the regular webroot REST API endpoint.
+	if (endsWith($path, ".jpg")) {
+		$uri = BASEURI . "demo/webroot/" . rawurlencode($path);
+		$response = get($uri)->send();
+		$serverResponse = new Response();
+		$serverResponse->setContent($response->raw_body);
+		$serverResponse->setStatusCode(Response::HTTP_OK);
+		$serverResponse->headers->set('Content-Type', $response->content_type);
+		return $serverResponse;
+	} else {
+		$response = loadViaGraphQL($path);
+		$schemaName = $response->node->schema->name;
+		if ($schemaName ===  "vehicle") {
+		 return $app['twig']->render('productDetail.twig', array(
+					'data' => $response)
+			);
+		} else if ($schemaName === "category") {
+		 return $app['twig']->render('productList.twig', array(
+					'data' => $response)
+		 );
+		} else {
+			return notFound();
+		}
+	}
 
 // Prevent silex from handling slashes in the request path
 })->assert("path", ".*");

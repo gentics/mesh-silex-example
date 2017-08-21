@@ -2,10 +2,10 @@
 
 {% block content %}
 <div>
-    <h1>{{ category.fields.name }}</h1>
-    <p>{{ category.fields.description | default("") }}</p>
-    <div class="row products">
-        {% for product in products %}
+    <h1>{{ data.node.fields.name }}</h1>
+    <p>{{ data.fields.description | default("") }}</p>
+    <div class="row data.node.products">
+        {% for product in data.node.products.elements %}
         <div class="col-xs-12 col-sm-6 col-md-4">
 
             <div class="panel panel-default">
@@ -16,7 +16,7 @@
                     </h3>
 
                     <a href="{{ product.path }}">
-                        <img style="height: 200px; width: 100%;" src="{{ product.fields.vehicleImage.path }}" class="img-thumbnail">
+                        <img style="height: 200px; width: 100%;" src="{{ product.fields.image.path }}" class="img-thumbnail">
                     </a>
 
                     <p>{{ product.fields.description }}</p>
