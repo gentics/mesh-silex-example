@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
 $app['debug'] = true;
 
-define("BASEURI", "http://localhost:8080/api/v1/");
+//define("BASEURI", "http://localhost:8080/api/v1/");
+define("BASEURI", "https://demo.getmesh.io/api/v1/");
 
 function endsWith($haystack, $needle) {
 	$length = strlen($needle);
@@ -27,15 +28,17 @@ function get($uri) {
 	return \Httpful\Request::get($uri);
 }
 
-function postQuery($uri, $query) {
+function postQuery($uri, $query, $vars = null) {
 	$json = array();
 	$json["query"] = $query;
-	return \Httpful\Request::post($uri)->body(json_encode($json));
+	$json["variables"] = $vars;
+	$body = json_encode($json);
+	return \Httpful\Request::post($uri)->body($body);
 }
 
-function runQuery($query) {
+function runQuery($query, $vars = null) {
 	$uri = BASEURI . "demo/graphql";
-	$response = postQuery($uri, $query)->send();
+	$response = postQuery($uri, $query, $vars)->send();
 	return $response->body;
 }
 
@@ -66,7 +69,7 @@ function loadTopNav() {
 function loadViaGraphQL(string $path) {
 	$uri = BASEURI . "demo/graphql";
 	$query = 
-	'{
+	'query($path: String) {
 		# We need to load the children of the root node of the project. 
 		# Those nodes will be used to construct our top navigation.
 		project {
@@ -89,7 +92,7 @@ function loadViaGraphQL(string $path) {
 			}
 		}
 		# Load the node with the specified path. This can either be a vehicle or a category.
-		node(path: "/' . $path . '") {
+		node(path: $path) {
 			uuid
 			# Include the schema so that we can switch between our two schemas. 
 			# E.g.: productDetail for vehicles and productList for categories nodes
@@ -120,7 +123,7 @@ function loadViaGraphQL(string $path) {
 			}
 		}
 	}
-  # We need to load the fields in two places. 
+	# We need to load the fields in two places. 
 	# Thus it makes sense to use a fragment and only specify them once.
 	fragment productInfo on vehicle {
 		slug
@@ -134,7 +137,7 @@ function loadViaGraphQL(string $path) {
 			path
 		}
 	}';
-	return runQuery($query)->data;
+	return runQuery($query, array("path" => "/" . $path))->data;
 }
 
 function notFound() {

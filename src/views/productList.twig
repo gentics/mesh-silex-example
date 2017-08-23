@@ -11,26 +11,26 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <h3>
-                        <a href="{{ product.path }}">{{ product.fields.name }}</a>
-                        <small>{{ product.fields.SKU }}</small>
+                        <a href="{{ product.path }}">{{ product.fields.name | default('Unknown') }}</a>
+                        <small>{{ product.fields.SKU | default(0) }}</small>
                     </h3>
 
                     <a href="{{ product.path }}">
-                        <img style="height: 200px; width: 100%;" src="{{ product.fields.image.path }}" class="img-thumbnail">
+                        <img style="height: 200px; width: 100%;" src="{{ product.fields.image.path | default("http://via.placeholder.com/350x200") }}" class="img-thumbnail">
                     </a>
 
-                    <p>{{ product.fields.description }}</p>
+                    <p>{{ product.fields.description | default("-") }}</p>
 
                     <hr>
 
                     <div class="row">
                         <div class="col-xs-6">
                         <!--| number: 2 -->
-                            <h3 style="margin: 5px 0;"><span class="label label-primary">€{{ product.fields.price  }}</span></h3>
+                            <h3 style="margin: 5px 0;"><span class="label label-primary">€{{ product.fields.price |default(0) }}</span></h3>
                         </div>
                         <div class="col-xs-6 text-right">
-                            <span class="label label-default">Weight: {{ product.fields.weight }}</span><br>
-                            <span class="label label-default">Stock: {{ product.fields.stocklevel }}</span>
+                            <span class="label label-default">Weight: {{ product.fields.weight| default(0) }}</span><br>
+                            <span class="label label-default">Stock: {{ product.fields.stocklevel | default(0) }}</span>
                         </div>
                     </div>
 
