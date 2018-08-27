@@ -1,6 +1,6 @@
 # Gentics Mesh Silex Example
 
-This example shows how to use [Gentics Mesh](https://getmesh.io) in combination with the [Silex](http://expressjs.com/) PHP routing framework.
+This example shows how to use [Gentics Mesh](https://getmesh.io) in combination with the [Silex](https://silex.symfony.com/) PHP routing framework.
 
 The Gentics Mesh GraphQL API is being used to locate the requested content. That content is used to render various [Twig](http://twig.sensiolabs.org/) templates.
 
@@ -33,4 +33,4 @@ You can start the docker container to run the example using the ```./dev.sh``` s
 
 ### Run with Apache
 
-Alternatively you can also deploy the PHP example on your Apache Webserver installation. You may use the provided site configration file ```mesh-demo.conf``` for your apache.
+Alternatively you can also deploy the PHP example on your Apache Webserver installation. You may use the provided site configuration file ```mesh-demo.conf``` for your apache.
