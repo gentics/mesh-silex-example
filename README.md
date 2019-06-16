@@ -1,3 +1,9 @@
+# Silex EOL
+
+Silex has reached the EOL and is no longer being developed. https://symfony.com/blog/the-end-of-silex
+
+This example will be archived. A good alternative for Silex would be Symfony.
+
 # Gentics Mesh Silex Example
 
 This example shows how to use [Gentics Mesh](https://getmesh.io) in combination with the [Silex](https://silex.symfony.com/) PHP routing framework.
